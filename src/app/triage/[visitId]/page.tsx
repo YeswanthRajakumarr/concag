@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, Loader2, Clipboard, Activity, FileText, CheckCircle, ChevronLeft, ChevronRight, Stethoscope } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -182,8 +183,26 @@ export default function TriagePage({ params }: { params: Promise<{ visitId: stri
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <div className="min-h-screen bg-muted/20 pb-20">
+                <div className="bg-white border-b sticky top-0 z-30 shadow-sm px-4 h-14 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <Skeleton className="h-8 w-8 rounded-full" />
+                        <div className="h-6 w-px bg-border" />
+                        <Skeleton className="h-5 w-32" />
+                    </div>
+                </div>
+                <div className="max-w-[1000px] mx-auto p-3 space-y-3 mt-2">
+                    <Skeleton className="h-10 w-full" />
+                    <Card>
+                        <CardHeader className="p-4 pb-2">
+                            <Skeleton className="h-6 w-48" />
+                            <Skeleton className="h-4 w-64" />
+                        </CardHeader>
+                        <CardContent className="p-4">
+                            <Skeleton className="h-[150px] w-full" />
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         )
     }

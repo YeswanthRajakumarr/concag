@@ -7,6 +7,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
     Table,
     TableBody,
@@ -76,8 +77,34 @@ export default function PatientsPage() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <Loader2 className="h-8 w-8 animate-spin text-violet-600" />
+            <div className="p-6 max-w-7xl mx-auto space-y-8">
+                <div className="flex justify-between items-center">
+                    <div className="space-y-2">
+                        <Skeleton className="h-10 w-48" />
+                        <Skeleton className="h-4 w-64" />
+                    </div>
+                    <Skeleton className="h-10 w-32" />
+                </div>
+                <Skeleton className="h-12 w-full" />
+                <Card className="border-none shadow-xl bg-card/60 backdrop-blur-sm overflow-hidden">
+                    <div className="p-0">
+                        {[1, 2, 3, 4, 5].map((i) => (
+                            <div key={i} className="flex items-center justify-between p-4 border-b">
+                                <div className="flex items-center gap-3">
+                                    <Skeleton className="h-10 w-10 rounded-full" />
+                                    <div className="space-y-2">
+                                        <Skeleton className="h-4 w-32" />
+                                        <Skeleton className="h-3 w-16" />
+                                    </div>
+                                </div>
+                                <Skeleton className="h-6 w-20" />
+                                <Skeleton className="h-4 w-16" />
+                                <Skeleton className="h-4 w-24" />
+                                <Skeleton className="h-8 w-24" />
+                            </div>
+                        ))}
+                    </div>
+                </Card>
             </div>
         )
     }

@@ -25,6 +25,7 @@ import { DiagnosisForm } from "@/components/doctor/DiagnosisForm"
 import { PrescriptionForm } from "@/components/doctor/PrescriptionForm"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "sonner"
 import {
     getVisitById,
@@ -165,8 +166,32 @@ export default function VisitPage({ params }: { params: Promise<{ visitId: strin
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-muted/20">
-                <Loader2 className="h-12 w-12 animate-spin text-violet-600" />
+            <div className="min-h-screen bg-muted/20 pb-20">
+                <div className="bg-white border-b px-6 py-4 sticky top-0 z-30 shadow-sm">
+                    <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                            <Skeleton className="h-10 w-10 rounded-full" />
+                            <div className="space-y-2">
+                                <Skeleton className="h-6 w-48" />
+                                <Skeleton className="h-4 w-32" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="max-w-[1600px] mx-auto p-3 grid grid-cols-1 lg:grid-cols-12 gap-4 mt-6">
+                    <div className="lg:col-span-8 space-y-6">
+                        <div className="flex gap-4">
+                            <Skeleton className="h-10 w-32" />
+                            <Skeleton className="h-10 w-32" />
+                            <Skeleton className="h-10 w-32" />
+                        </div>
+                        <Skeleton className="h-[400px] w-full rounded-xl" />
+                    </div>
+                    <div className="lg:col-span-4 space-y-6">
+                        <Skeleton className="h-[200px] w-full rounded-xl" />
+                        <Skeleton className="h-[200px] w-full rounded-xl" />
+                    </div>
+                </div>
             </div>
         )
     }

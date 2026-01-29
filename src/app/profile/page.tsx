@@ -5,6 +5,7 @@ import { User, Mail, Shield, Calendar, Clock, Loader2, Activity } from "lucide-r
 import { createClient } from "@/utils/supabase/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
 import { getActiveVisits } from "@/lib/api"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
 
@@ -45,8 +46,13 @@ export default function ProfilePage() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <div className="p-3 max-w-4xl mx-auto space-y-4">
+                <Skeleton className="h-8 w-32" />
+                <div className="grid md:grid-cols-3 gap-2">
+                    <Skeleton className="md:col-span-2 h-48 rounded-xl" />
+                    <Skeleton className="h-48 rounded-xl" />
+                </div>
+                <Skeleton className="h-32 w-full rounded-xl" />
             </div>
         )
     }

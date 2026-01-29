@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Plus, RefreshCw, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Skeleton } from "@/components/ui/skeleton"
 
 import { Button } from "@/components/ui/button"
 import { VisitCard } from "@/components/queue/VisitCard"
@@ -83,8 +84,27 @@ export default function QueuePage() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <div className={cn("flex flex-col h-[calc(100vh-3.5rem)] md:h-[calc(100vh-3.5rem)]", THEME.spacing.page)}>
+                <div className="flex justify-between items-center mb-2">
+                    <div className="space-y-2">
+                        <Skeleton className="h-8 w-48" />
+                        <Skeleton className="h-4 w-24" />
+                    </div>
+                    <div className="flex gap-2">
+                        <Skeleton className="h-8 w-24" />
+                        <Skeleton className="h-8 w-32" />
+                    </div>
+                </div>
+                <div className={cn("hidden md:grid grid-cols-2 lg:grid-cols-4 h-full overflow-hidden", THEME.spacing.cardGap)}>
+                    {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className="flex flex-col h-[calc(100vh-9rem)] border rounded-lg bg-muted/10 p-3 space-y-3">
+                            <Skeleton className="h-8 w-full" />
+                            <Skeleton className="h-32 w-full" />
+                            <Skeleton className="h-32 w-full" />
+                            <Skeleton className="h-32 w-full" />
+                        </div>
+                    ))}
+                </div>
             </div>
         )
     }

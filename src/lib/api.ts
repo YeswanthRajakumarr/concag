@@ -9,12 +9,22 @@ import type {
     DoctorNote,
     VisitStatus
 } from "@/types/database"
+import type { SupabaseClient } from "@supabase/supabase-js"
 
-const supabase = createClient()
+// Lazy initialization to prevent build-time crashes if env vars are missing
+let supabaseInstance: ReturnType<typeof createClient> | undefined
+
+function getSupabase() {
+    if (!supabaseInstance) {
+        supabaseInstance = createClient()
+    }
+    return supabaseInstance
+}
 
 // ============= PATIENTS =============
 
 export async function getPatients() {
+    const supabase = getSupabase()
     const { data, error } = await supabase
         .from("patients")
         .select("*")
@@ -25,6 +35,7 @@ export async function getPatients() {
 }
 
 export async function getPatientById(id: string) {
+    const supabase = getSupabase()
     const { data, error } = await supabase
         .from("patients")
         .select("*")
@@ -41,6 +52,7 @@ export async function createPatient(patient: {
     date_of_birth?: string
     phone?: string
 }) {
+    const supabase = getSupabase()
     const { data, error } = await supabase
         .from("patients")
         .insert(patient)
@@ -54,6 +66,7 @@ export async function createPatient(patient: {
 // ============= VISITS =============
 
 export async function getActiveVisits() {
+    const supabase = getSupabase()
     const { data, error } = await supabase
         .from("visits")
         .select(`
@@ -68,6 +81,7 @@ export async function getActiveVisits() {
 }
 
 export async function getVisitById(id: string) {
+    const supabase = getSupabase()
     const { data, error } = await supabase
         .from("visits")
         .select(`
@@ -90,6 +104,7 @@ export async function createVisit(visit: {
     visit_type: "OPD" | "EMERGENCY" | "FOLLOW_UP" | "PROCEDURE"
     department?: string
 }) {
+    const supabase = getSupabase()
     const { data, error } = await supabase
         .from("visits")
         .insert({
@@ -108,6 +123,7 @@ export async function createVisit(visit: {
 }
 
 export async function updateVisitStatus(id: string, status: VisitStatus) {
+    const supabase = getSupabase()
     const { data, error } = await supabase
         .from("visits")
         .update({ status })
@@ -125,6 +141,7 @@ export async function updateVisitStatus(id: string, status: VisitStatus) {
 // ============= VITALS =============
 
 export async function getVitalsByVisitId(visitId: string) {
+    const supabase = getSupabase()
     const { data, error } = await supabase
         .from("vitals")
         .select("*")
@@ -136,6 +153,7 @@ export async function getVitalsByVisitId(visitId: string) {
 }
 
 export async function getVitalsByPatientId(patientId: string) {
+    const supabase = getSupabase()
     const { data, error } = await supabase
         .from("vitals")
         .select(`
@@ -161,6 +179,7 @@ export async function createVitals(vitals: {
     weight?: number
     height?: number
 }) {
+    const supabase = getSupabase()
     const { data: { user } } = await supabase.auth.getUser()
 
     const payload = {
@@ -195,6 +214,7 @@ export async function createVitals(vitals: {
 // ============= TRIAGE =============
 
 export async function getTriageByVisitId(visitId: string) {
+    const supabase = getSupabase()
     const { data, error } = await supabase
         .from("triage_records")
         .select("*")
@@ -218,6 +238,7 @@ export async function createOrUpdateTriage(triage: {
     past_surgeries?: string
     notes?: string
 }) {
+    const supabase = getSupabase()
     const { data: { user } } = await supabase.auth.getUser()
 
     // Check if triage exists
@@ -232,7 +253,7 @@ export async function createOrUpdateTriage(triage: {
         if (existing) {
             const { data, error } = await supabase
                 .from("triage_records")
-                .update(triage) // Don't overwrite created_by on update usually, but can if needed. Let's keep original creator? Actually standard is to keep creator.
+                .update(triage)
                 .eq("id", existing.id)
                 .select()
                 .single()
@@ -279,6 +300,7 @@ export async function createOrUpdateTriage(triage: {
 // ============= PRESCRIPTIONS =============
 
 export async function getPrescriptionsByVisitId(visitId: string) {
+    const supabase = getSupabase()
     const { data, error } = await supabase
         .from("prescriptions")
         .select("*")
@@ -291,6 +313,7 @@ export async function getPrescriptionsByVisitId(visitId: string) {
 
 // Helper to ensure profile exists
 async function ensureUserProfile(user: any) {
+    const supabase = getSupabase()
     const { data: profile } = await supabase
         .from("profiles")
         .select("id")
@@ -324,6 +347,7 @@ export async function createPrescription(prescription: {
     duration?: string
     notes?: string
 }) {
+    const supabase = getSupabase()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     if (authError || !user) {
@@ -366,6 +390,7 @@ export async function createPrescription(prescription: {
 }
 
 export async function deletePrescription(id: string) {
+    const supabase = getSupabase()
     const { error } = await supabase
         .from("prescriptions")
         .delete()
@@ -381,6 +406,7 @@ export async function createDoctorNote(note: {
     note_type: "DIAGNOSIS" | "CLINICAL_NOTE" | "FOLLOWUP"
     content: string
 }) {
+    const supabase = getSupabase()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error("User not authenticated")
 

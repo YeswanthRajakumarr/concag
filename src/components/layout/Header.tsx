@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { MobileSidebar } from "./Sidebar"
-import { Activity, LogOut, User, Stethoscope, HeartPulse } from "lucide-react"
+import { Activity, LogOut, User, Stethoscope, HeartPulse, Bell } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -63,50 +63,57 @@ export function Header() {
                 </div>
             </div>
 
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-full bg-violet-100 flex items-center justify-center">
-                            <RoleIcon className="h-4 w-4 text-violet-600" />
-                        </div>
-                        <div className="hidden sm:flex items-center gap-2">
-                            <span className="text-sm font-medium">
-                                {user?.name || "User"}
-                            </span>
-                            <Badge variant="secondary" className={roleColor}>
-                                {roleLabel}
-                            </Badge>
-                        </div>
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuLabel>
-                        <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-2">
-                                <span>{user?.name}</span>
+            <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full relative">
+                    <Bell className="h-4 w-4" />
+                    <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500 border-2 border-background" />
+                </Button>
+
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="flex items-center gap-2">
+                            <div className="h-8 w-8 rounded-full bg-violet-100 flex items-center justify-center">
+                                <RoleIcon className="h-4 w-4 text-violet-600" />
+                            </div>
+                            <div className="hidden sm:flex items-center gap-2">
+                                <span className="text-sm font-medium">
+                                    {user?.name || "User"}
+                                </span>
                                 <Badge variant="secondary" className={roleColor}>
                                     {roleLabel}
                                 </Badge>
                             </div>
-                            <span className="text-xs font-normal text-muted-foreground">
-                                {user?.email}
-                            </span>
-                        </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild className="cursor-pointer">
-                        <Link href="/profile" className="flex items-center">
-                            <User className="h-4 w-4 mr-2" />
-                            Profile
-                        </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout} className="text-red-600 cursor-pointer">
-                        <LogOut className="h-4 w-4 mr-2" />
-                        Sign out
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                        <DropdownMenuLabel>
+                            <div className="flex flex-col gap-1">
+                                <div className="flex items-center gap-2">
+                                    <span>{user?.name}</span>
+                                    <Badge variant="secondary" className={roleColor}>
+                                        {roleLabel}
+                                    </Badge>
+                                </div>
+                                <span className="text-xs font-normal text-muted-foreground">
+                                    {user?.email}
+                                </span>
+                            </div>
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild className="cursor-pointer">
+                            <Link href="/profile" className="flex items-center">
+                                <User className="h-4 w-4 mr-2" />
+                                Profile
+                            </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={handleLogout} className="text-red-600 cursor-pointer">
+                            <LogOut className="h-4 w-4 mr-2" />
+                            Sign out
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
         </header>
     )
 }
