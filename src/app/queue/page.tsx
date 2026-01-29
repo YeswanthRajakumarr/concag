@@ -11,6 +11,7 @@ import { NewAdmissionDialog } from "@/components/queue/NewAdmissionDialog"
 import { getActiveVisits, updateVisitStatus } from "@/lib/api"
 import { toast } from "sonner"
 import type { VisitWithPatient, VisitStatus } from "@/types/database"
+import { THEME } from "@/lib/theme"
 
 const statusOrder: VisitStatus[] = [
     "WAITING",
@@ -88,13 +89,13 @@ export default function QueuePage() {
     }
 
     return (
-        <div className="p-8 max-w-[1600px] mx-auto animate-in-fade">
+        <div className={cn("p-8 max-w-[1600px] mx-auto", THEME.animations.fadeIn)}>
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
                 <div className="space-y-1">
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tight">Patient Queue</h1>
+                    <h1 className={THEME.typography.heading}>Patient Queue</h1>
                     <div className="flex items-center gap-2">
-                        <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">
+                        <div className={cn(THEME.components.pulse, "bg-emerald-500")} />
+                        <p className={THEME.typography.meta}>
                             {visits.length} Live Clinical Sessions
                         </p>
                     </div>
@@ -105,7 +106,7 @@ export default function QueuePage() {
                         size="sm"
                         onClick={handleRefresh}
                         disabled={refreshing}
-                        className="font-black uppercase tracking-widest text-[10px] h-10 px-5 text-slate-500 hover:text-violet-600 transition-colors"
+                        className={cn(THEME.typography.meta, "h-10 px-5 transition-colors")}
                     >
                         <RefreshCw className={cn("h-3 w-3 mr-2", refreshing && "animate-spin")} />
                         Synch Data

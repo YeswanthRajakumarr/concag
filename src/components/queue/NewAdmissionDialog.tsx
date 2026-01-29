@@ -34,6 +34,7 @@ import { getPatients, createPatient, createVisit } from "@/lib/api"
 import type { Patient, VisitWithPatient } from "@/types/database"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
+import { THEME } from "@/lib/theme"
 
 const admissionSchema = z.object({
     visit_type: z.enum(["OPD", "EMERGENCY", "FOLLOW_UP", "PROCEDURE"]),
@@ -152,18 +153,18 @@ export function NewAdmissionDialog({ onSuccess }: NewAdmissionDialogProps) {
             if (!val) resetDialog()
         }}>
             <DialogTrigger asChild>
-                <Button size="sm" className="bg-slate-900 hover:bg-black text-white font-black uppercase tracking-widest text-[10px] h-10 px-6 rounded-xl shadow-xl shadow-slate-200 gap-2">
+                <Button size="sm" className={THEME.components.buttonSecondary}>
                     <Plus className="h-4 w-4" />
                     New Admission
                 </Button>
             </DialogTrigger>
-            <DialogContent showCloseButton={false} className="sm:max-w-[500px] border-none shadow-2xl rounded-3xl p-0 overflow-hidden">
-                <div className="bg-violet-600 p-8 text-white relative">
+            <DialogContent showCloseButton={false} className={cn(THEME.components.card, "sm:max-w-[500px] p-0")}>
+                <div className={`bg-${THEME.colors.brand.primary} p-8 text-white relative`}>
                     <div className="absolute top-4 right-4 h-8 w-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 cursor-pointer transition-colors" onClick={() => setOpen(false)}>
                         <X className="h-4 w-4" />
                     </div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-70 mb-2 leading-none">Registration Portal</p>
-                    <DialogTitle className="text-3xl font-black tracking-tight leading-none uppercase">
+                    <p className={THEME.typography.subheading}>Registration Portal</p>
+                    <DialogTitle className={THEME.typography.heading}>
                         {step === "search" && "Find Patient"}
                         {step === "patient_form" && "New Profile"}
                         {step === "visit_form" && "Assign Dept"}
@@ -174,12 +175,12 @@ export function NewAdmissionDialog({ onSuccess }: NewAdmissionDialogProps) {
                     {step === "search" && (
                         <div className="space-y-6">
                             <div className="relative group">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-violet-600 transition-colors" />
+                                <Search className={`absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-${THEME.colors.text.muted} group-focus-within:text-${THEME.colors.brand.primary} transition-colors`} />
                                 <Input
                                     placeholder="Search by name or phone..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="pl-12 h-14 rounded-2xl bg-slate-50 border-none shadow-inner text-base font-medium placeholder:text-slate-400 focus-visible:ring-violet-500"
+                                    className={THEME.components.input}
                                 />
                             </div>
 
@@ -200,15 +201,15 @@ export function NewAdmissionDialog({ onSuccess }: NewAdmissionDialogProps) {
                                             className="flex items-center justify-between p-4 rounded-2xl bg-white border border-slate-100 hover:border-violet-200 hover:shadow-lg hover:shadow-violet-50 cursor-pointer transition-all group"
                                         >
                                             <div className="flex items-center gap-3">
-                                                <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center font-black text-xs text-slate-600 group-hover:bg-violet-600 group-hover:text-white transition-colors">
+                                                <div className={`h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center font-black text-xs text-slate-600 group-hover:bg-${THEME.colors.brand.primary} group-hover:text-white transition-colors`}>
                                                     {p.name.charAt(0)}
                                                 </div>
                                                 <div>
-                                                    <p className="font-bold text-slate-900">{p.name}</p>
-                                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{p.phone || "No Contact"}</p>
+                                                    <p className={`font-bold text-${THEME.colors.text.main}`}>{p.name}</p>
+                                                    <p className={THEME.typography.meta}>{p.phone || "No Contact"}</p>
                                                 </div>
                                             </div>
-                                            <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-violet-600" />
+                                            <ChevronRight className={`h-4 w-4 text-slate-300 group-hover:text-${THEME.colors.brand.primary}`} />
                                         </div>
                                     ))
                                 ) : (
@@ -281,7 +282,7 @@ export function NewAdmissionDialog({ onSuccess }: NewAdmissionDialogProps) {
                                 </div>
                                 <div className="flex gap-3">
                                     <Button type="button" variant="ghost" onClick={() => setStep("search")} className="flex-1 h-12 rounded-xl text-slate-500 font-bold uppercase tracking-widest text-[10px]">Back</Button>
-                                    <Button type="submit" disabled={creating} className="flex-[2] h-12 bg-violet-600 hover:bg-violet-900 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-violet-100">
+                                    <Button type="submit" disabled={creating} className={cn(THEME.components.buttonPrimary, "flex-[2]")}>
                                         {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : "Continue to Visit"}
                                     </Button>
                                 </div>
@@ -292,13 +293,13 @@ export function NewAdmissionDialog({ onSuccess }: NewAdmissionDialogProps) {
                     {step === "visit_form" && (
                         <Form {...admissionForm}>
                             <form onSubmit={admissionForm.handleSubmit(handleAdmissionSubmit)} className="space-y-6">
-                                <div className="p-4 rounded-2xl bg-violet-50 flex items-center gap-4 border border-violet-100">
-                                    <div className="h-12 w-12 rounded-xl bg-violet-600 flex items-center justify-center font-black text-white text-lg shadow-lg shadow-violet-200">
+                                <div className={`p-4 rounded-2xl bg-${THEME.colors.brand.primaryLight} flex items-center gap-4 border border-violet-100`}>
+                                    <div className={`h-12 w-12 rounded-xl bg-${THEME.colors.brand.primary} flex items-center justify-center font-black text-white text-lg shadow-lg shadow-violet-200`}>
                                         {selectedPatient?.name.charAt(0)}
                                     </div>
                                     <div>
-                                        <p className="font-black text-violet-900 leading-tight">{selectedPatient?.name}</p>
-                                        <p className="text-[10px] font-black uppercase tracking-[0.1em] text-violet-600 opacity-60">Selected Patient</p>
+                                        <p className={`font-black text-${THEME.colors.brand.primaryHover} leading-tight`}>{selectedPatient?.name}</p>
+                                        <p className={THEME.typography.subheading}>Selected Patient</p>
                                     </div>
                                 </div>
 
@@ -308,10 +309,10 @@ export function NewAdmissionDialog({ onSuccess }: NewAdmissionDialogProps) {
                                         name="department"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-slate-400">Clinical Department</FormLabel>
+                                                <FormLabel className={THEME.typography.label}>Clinical Department</FormLabel>
                                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                     <FormControl>
-                                                        <SelectTrigger className="h-14 bg-slate-50 border-none rounded-2xl text-base font-bold">
+                                                        <SelectTrigger className={THEME.components.input}>
                                                             <SelectValue />
                                                         </SelectTrigger>
                                                     </FormControl>
@@ -356,7 +357,7 @@ export function NewAdmissionDialog({ onSuccess }: NewAdmissionDialogProps) {
 
                                 <div className="flex gap-3 pt-4">
                                     <Button type="button" variant="ghost" onClick={() => setStep("search")} className="flex-1 h-14 rounded-2xl text-slate-500 font-bold uppercase tracking-widest text-[10px]">Switch Patient</Button>
-                                    <Button type="submit" disabled={creating} className="flex-[2] h-14 bg-slate-900 hover:bg-black rounded-2xl font-black uppercase tracking-widest text-xs text-white shadow-xl shadow-slate-200 gap-2">
+                                    <Button type="submit" disabled={creating} className={cn(THEME.components.buttonSecondary, "flex-[2] h-14")}>
                                         {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : "Complete Admission"}
                                         <Check className="h-4 w-4" />
                                     </Button>
