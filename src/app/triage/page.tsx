@@ -43,10 +43,10 @@ export default function TriageIndexPage() {
     }
 
     return (
-        <div className="p-6">
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold">Triage Queue</h1>
-                <p className="text-muted-foreground">
+        <div className="p-3">
+            <div className="mb-2">
+                <h1 className="text-xl font-bold">Triage Queue</h1>
+                <p className="text-xs text-muted-foreground">
                     {visits.length} patients waiting for or in triage
                 </p>
             </div>
@@ -65,21 +65,21 @@ export default function TriageIndexPage() {
                     </CardContent>
                 </Card>
             ) : (
-                <div className="grid gap-4">
+                <div className="grid gap-2">
                     {visits.map((visit) => (
                         <Card key={visit.id} className="hover:shadow-md transition-shadow">
-                            <CardContent className="p-4">
+                            <CardContent className="p-3">
                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
-                                        <div className="h-10 w-10 rounded-full bg-violet-100 flex items-center justify-center">
-                                            <span className="text-violet-600 font-semibold">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-8 w-8 rounded-full bg-violet-100 flex items-center justify-center">
+                                            <span className="text-violet-600 font-semibold text-xs">
                                                 {visit.patient.name.charAt(0)}
                                             </span>
                                         </div>
                                         <div>
-                                            <h3 className="font-semibold">{visit.patient.name}</h3>
-                                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                <Badge variant="outline" className="text-xs">
+                                            <h3 className="font-semibold text-sm">{visit.patient.name}</h3>
+                                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                                <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5">
                                                     {visit.department || "General"}
                                                 </Badge>
                                                 <span>•</span>
@@ -87,16 +87,17 @@ export default function TriageIndexPage() {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-2">
                                         <Badge
                                             variant={visit.status === "IN_TRIAGE" ? "default" : "secondary"}
+                                            className="text-[10px] px-2 h-6"
                                         >
                                             {visit.status === "IN_TRIAGE" ? "In Progress" : "Waiting"}
                                         </Badge>
-                                        <Button asChild>
+                                        <Button asChild size="sm" className="h-7 text-xs">
                                             <Link href={`/triage/${visit.id}`}>
-                                                {visit.status === "IN_TRIAGE" ? "Continue" : "Start"} Triage
-                                                <ArrowRight className="h-4 w-4 ml-2" />
+                                                {visit.status === "IN_TRIAGE" ? "Continue" : "Start"}
+                                                <ArrowRight className="h-3 w-3 ml-1" />
                                             </Link>
                                         </Button>
                                     </div>

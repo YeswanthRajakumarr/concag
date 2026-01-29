@@ -11,15 +11,28 @@ interface StatusColumnProps {
     children: React.ReactNode
 }
 
+import { Clock, ClipboardList, Stethoscope, UserCheck, Circle } from "lucide-react"
+
+// ... (existing imports)
+
 export function StatusColumn({ status, count, children }: StatusColumnProps) {
     const config = VISIT_STATUS_CONFIG[status]
     const statusColor = getStatusColorClasses(status)
 
+    const StatusIcon = {
+        WAITING: Clock,
+        IN_TRIAGE: ClipboardList,
+        READY_FOR_DOCTOR: Stethoscope,
+        WITH_DOCTOR: UserCheck,
+        COMPLETED: Circle // Fallback
+    }[status] || Circle
+
     return (
-        <div className="flex flex-col h-[calc(100vh-12rem)] min-h-[500px] border rounded-lg bg-muted/10 overflow-hidden">
+        <div className="flex flex-col h-[calc(100vh-9rem)] min-h-[500px] border rounded-lg bg-muted/10 overflow-hidden">
             {/* Standard Table-like Header */}
             <div className={cn("px-4 py-3 border-b bg-background flex items-center justify-between sticky top-0 z-10", statusColor.replace('text-', 'border-l-4 border-l-'))}>
                 <div className="flex items-center gap-2">
+                    <StatusIcon className={cn("h-4 w-4", statusColor)} />
                     <h3 className="font-semibold text-sm uppercase text-foreground">
                         {config.label}
                     </h3>

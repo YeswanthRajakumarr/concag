@@ -22,9 +22,9 @@ import type { Prescription } from "@/types/database"
 import { cn } from "@/lib/utils"
 
 const prescriptionSchema = z.object({
-    medication: z.string().min(1, "Medication name is required"),
-    dosage: z.string().optional(),
-    frequency: z.string().optional(),
+    medication: z.string().min(2, "Medication name is required (min 2 chars)"),
+    dosage: z.string().min(1, "Dosage is required (e.g. 500mg)"),
+    frequency: z.string().min(1, "Frequency is required (e.g. BID)"),
     duration: z.string().optional(),
     notes: z.string().optional(),
 })

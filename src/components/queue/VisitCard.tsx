@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { formatDistanceToNow } from "date-fns"
-import { Clock, AlertCircle, ChevronRight, User } from "lucide-react"
+import { Clock, AlertCircle, ChevronRight, User, Building2 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
@@ -42,10 +42,15 @@ export function VisitCard({ visit, onAction }: VisitCardProps) {
             <CardContent className="p-3 space-y-3">
                 {/* Top Row: Name and Time */}
                 <div className="flex justify-between items-start gap-2">
-                    <div className="flex-1 min-w-0 font-bold text-sm truncate" title={visit.patient.name}>
-                        {visit.patient.name}
+                    <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                        <div className="bg-muted p-1 rounded-md">
+                            <User className="h-3 w-3 text-muted-foreground" />
+                        </div>
+                        <div className="font-bold text-sm truncate" title={visit.patient.name}>
+                            {visit.patient.name}
+                        </div>
                     </div>
-                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground whitespace-nowrap shrink-0">
+                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground whitespace-nowrap shrink-0 bg-muted/50 px-1.5 py-0.5 rounded-md">
                         <Clock className="h-3 w-3" />
                         <span>{waitTime}</span>
                     </div>
@@ -54,7 +59,8 @@ export function VisitCard({ visit, onAction }: VisitCardProps) {
                 {/* Middle Row: Badges */}
                 <div className="flex flex-wrap items-center gap-2 min-h-[1.5rem]">
                     {visit.department && (
-                        <Badge variant="secondary" className="text-[10px] font-medium px-1.5 py-0 max-w-[140px] truncate" title={visit.department}>
+                        <Badge variant="secondary" className="text-[10px] font-medium px-1.5 py-0 max-w-[140px] truncate flex items-center gap-1" title={visit.department}>
+                            <Building2 className="h-3 w-3 opacity-50" />
                             {visit.department}
                         </Badge>
                     )}

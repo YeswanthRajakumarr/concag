@@ -20,8 +20,10 @@ export const THEME = {
 
     // Standard Spacing/Layout
     spacing: {
-        page: "p-6",
-        cardGap: "gap-4",
+        page: "p-3",
+        cardGap: "gap-2",
+        headerHeight: "h-14",
+        sidebarWidth: "w-56",
     },
 } as const;
 

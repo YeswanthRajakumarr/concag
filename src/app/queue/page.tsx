@@ -90,11 +90,11 @@ export default function QueuePage() {
     }
 
     return (
-        <div className={cn("flex flex-col h-[calc(100vh-4rem)] md:h-screen", THEME.spacing.page)}>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                <div className="space-y-1">
-                    <h1 className="text-2xl font-bold tracking-tight text-foreground">Patient Queue</h1>
-                    <p className="text-sm text-muted-foreground">
+        <div className={cn("flex flex-col h-[calc(100vh-3.5rem)] md:h-[calc(100vh-3.5rem)]", THEME.spacing.page)}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                <div className="space-y-0.5">
+                    <h1 className="text-xl font-bold tracking-tight text-foreground">Patient Queue</h1>
+                    <p className="text-xs text-muted-foreground">
                         {visits.length} active sessions
                     </p>
                 </div>
@@ -104,9 +104,9 @@ export default function QueuePage() {
                         size="sm"
                         onClick={handleRefresh}
                         disabled={refreshing}
-                        className="flex-1 sm:flex-none"
+                        className="flex-1 sm:flex-none h-8 text-xs"
                     >
-                        <RefreshCw className={cn("h-4 w-4 mr-2", refreshing && "animate-spin")} />
+                        <RefreshCw className={cn("h-3 w-3 mr-2", refreshing && "animate-spin")} />
                         Sync
                     </Button>
                     <NewAdmissionDialog onSuccess={handleNewAdmission} />
@@ -148,13 +148,13 @@ export default function QueuePage() {
             </div>
 
             {/* Desktop View: Grid */}
-            <div className={cn("hidden md:grid grid-cols-2 lg:grid-cols-4 h-full", THEME.spacing.cardGap)}>
+            <div className={cn("hidden md:grid grid-cols-2 lg:grid-cols-4 h-full overflow-hidden", THEME.spacing.cardGap)}>
                 {statusOrder.map((status) => {
                     const statusVisits = getVisitsByStatus(status)
                     return (
                         <StatusColumn key={status} status={status} count={statusVisits.length}>
                             {statusVisits.length === 0 ? (
-                                <div className="text-center py-8 text-sm text-muted-foreground">
+                                <div className="text-center py-8 text-xs text-muted-foreground">
                                     No visits
                                 </div>
                             ) : (

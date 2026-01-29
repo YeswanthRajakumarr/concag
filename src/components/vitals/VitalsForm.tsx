@@ -67,6 +67,12 @@ export function VitalsForm({ values, onChange, disabled }: VitalsFormProps) {
                         const status = getFieldStatus(field.key, value)
                         const Icon = field.icon
 
+                        // Define safe ranges for HTML validation
+                        let min = "0"
+                        let max = "300"
+                        if (field.key === "temperature") { min = "30"; max = "45" }
+                        if (field.key === "spo2") { min = "0"; max = "100" }
+
                         return (
                             <div key={field.key} className="space-y-2 group">
                                 <Label htmlFor={field.key} className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2 group-hover:text-violet-600 transition-colors">
@@ -77,6 +83,8 @@ export function VitalsForm({ values, onChange, disabled }: VitalsFormProps) {
                                     <Input
                                         id={field.key}
                                         type="number"
+                                        min={min}
+                                        max={max}
                                         step={field.key === "temperature" ? "0.1" : "1"}
                                         placeholder={field.placeholder}
                                         value={value ?? ""}
@@ -93,6 +101,14 @@ export function VitalsForm({ values, onChange, disabled }: VitalsFormProps) {
                                         </span>
                                     </div>
                                 </div>
+                                {status !== "normal" && value !== undefined && (
+                                    <p className={cn(
+                                        "text-[10px] font-bold uppercase tracking-wider animate-in-fade",
+                                        status === "critical" ? "text-red-600" : "text-amber-600"
+                                    )}>
+                                        {status === "critical" ? "CRITICAL VALUE" : "ABNORMAL"}
+                                    </p>
+                                )}
                             </div>
                         )
                     })}

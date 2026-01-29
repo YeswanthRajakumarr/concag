@@ -49,7 +49,7 @@ export function Sidebar({ className }: SidebarProps) {
     return (
         <aside
             className={cn(
-                "hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 border-r bg-card",
+                "hidden lg:flex lg:flex-col lg:w-56 lg:fixed lg:inset-y-0 border-r bg-card",
                 className
             )}
         >
@@ -72,13 +72,13 @@ export function Sidebar({ className }: SidebarProps) {
                             key={item.href}
                             href={item.href}
                             className={cn(
-                                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                                "flex items-center gap-3 rounded-lg px-2 py-1.5 text-xs font-medium transition-all duration-200",
                                 isActive
                                     ? "bg-violet-600 text-white shadow-md shadow-violet-200"
                                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                             )}
                         >
-                            <item.icon className="h-5 w-5" />
+                            <item.icon className="h-4 w-4" />
                             {item.title}
                         </Link>
                     )
@@ -86,10 +86,8 @@ export function Sidebar({ className }: SidebarProps) {
             </nav>
 
             {/* Footer */}
-            <div className="p-4 border-t">
-                <div className="px-3 py-2 text-xs text-muted-foreground">
-                    Triage & Visit Management
-                </div>
+            <div className="p-2 border-t text-[10px] text-muted-foreground text-center">
+                Clinical Dashboard v1.0
             </div>
         </aside>
     )
@@ -107,7 +105,7 @@ export function MobileSidebar() {
                     <span className="sr-only">Toggle Menu</span>
                 </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-64 p-0">
+            <SheetContent side="left" className="w-56 p-0">
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                 <div className="flex h-16 items-center gap-2 px-6 border-b">
                     <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-violet-600">
@@ -124,13 +122,13 @@ export function MobileSidebar() {
                                 href={item.href}
                                 onClick={() => setOpen(false)}
                                 className={cn(
-                                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                                    "flex items-center gap-3 rounded-lg px-2 py-1.5 text-xs font-medium transition-all duration-200",
                                     isActive
                                         ? "bg-violet-600 text-white"
                                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                 )}
                             >
-                                <item.icon className="h-5 w-5" />
+                                <item.icon className="h-4 w-4" />
                                 {item.title}
                             </Link>
                         )

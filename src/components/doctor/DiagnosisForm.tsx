@@ -19,7 +19,7 @@ import {
 import { cn } from "@/lib/utils"
 
 const diagnosisSchema = z.object({
-    diagnosis: z.string().min(1, "Diagnosis is required"),
+    diagnosis: z.string().min(10, "Diagnosis must be descriptive (at least 10 characters)"),
     advice: z.string().optional(),
 })
 

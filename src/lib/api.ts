@@ -161,14 +161,35 @@ export async function createVitals(vitals: {
     weight?: number
     height?: number
 }) {
-    const { data, error } = await supabase
-        .from("vitals")
-        .insert(vitals)
-        .select()
-        .single()
+    const { data: { user } } = await supabase.auth.getUser()
 
-    if (error) throw error
-    return data as Vitals
+    const payload = {
+        ...vitals,
+        recorded_by: user?.id || null
+    }
+
+    try {
+        const { data, error } = await supabase
+            .from("vitals")
+            .insert(payload)
+            .select()
+            .single()
+
+        if (error) throw error
+        return data as Vitals
+    } catch (error: any) {
+        if (error?.code === "23503" && user) {
+            await ensureUserProfile(user)
+            const { data, error: retryError } = await supabase
+                .from("vitals")
+                .insert(payload)
+                .select()
+                .single()
+            if (retryError) throw retryError
+            return data as Vitals
+        }
+        throw error
+    }
 }
 
 // ============= TRIAGE =============
@@ -197,28 +218,61 @@ export async function createOrUpdateTriage(triage: {
     past_surgeries?: string
     notes?: string
 }) {
+    const { data: { user } } = await supabase.auth.getUser()
+
     // Check if triage exists
     const existing = await getTriageByVisitId(triage.visit_id)
 
-    if (existing) {
-        const { data, error } = await supabase
-            .from("triage_records")
-            .update(triage)
-            .eq("id", existing.id)
-            .select()
-            .single()
+    const payload = {
+        ...triage,
+        created_by: user?.id || null
+    }
 
-        if (error) throw error
-        return data as TriageRecord
-    } else {
-        const { data, error } = await supabase
-            .from("triage_records")
-            .insert(triage)
-            .select()
-            .single()
+    try {
+        if (existing) {
+            const { data, error } = await supabase
+                .from("triage_records")
+                .update(triage) // Don't overwrite created_by on update usually, but can if needed. Let's keep original creator? Actually standard is to keep creator.
+                .eq("id", existing.id)
+                .select()
+                .single()
 
-        if (error) throw error
-        return data as TriageRecord
+            if (error) throw error
+            return data as TriageRecord
+        } else {
+            const { data, error } = await supabase
+                .from("triage_records")
+                .insert(payload)
+                .select()
+                .single()
+
+            if (error) throw error
+            return data as TriageRecord
+        }
+    } catch (error: any) {
+        if (error?.code === "23503" && user) {
+            await ensureUserProfile(user)
+            // Retry
+            if (existing) {
+                const { data, error: retryError } = await supabase
+                    .from("triage_records")
+                    .update(triage)
+                    .eq("id", existing.id)
+                    .select()
+                    .single()
+                if (retryError) throw retryError
+                return data as TriageRecord
+            } else {
+                const { data, error: retryError } = await supabase
+                    .from("triage_records")
+                    .insert(payload)
+                    .select()
+                    .single()
+                if (retryError) throw retryError
+                return data as TriageRecord
+            }
+        }
+        throw error
     }
 }
 
@@ -235,6 +289,33 @@ export async function getPrescriptionsByVisitId(visitId: string) {
     return data as Prescription[]
 }
 
+// Helper to ensure profile exists
+async function ensureUserProfile(user: any) {
+    const { data: profile } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("id", user.id)
+        .single()
+
+    if (!profile) {
+        console.log("Profile missing for user, creating fallback profile...")
+        const { error: insertError } = await supabase
+            .from("profiles")
+            .insert({
+                id: user.id,
+                email: user.email,
+                full_name: user.user_metadata?.full_name || user.email?.split("@")[0] || "Doctor",
+                role: user.user_metadata?.role || "DOCTOR",
+            })
+
+        if (insertError) {
+            console.error("Failed to recover profile:", insertError)
+        } else {
+            console.log("Fallback profile created successfully.")
+        }
+    }
+}
+
 export async function createPrescription(prescription: {
     visit_id: string
     medication: string
@@ -243,8 +324,14 @@ export async function createPrescription(prescription: {
     duration?: string
     notes?: string
 }) {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) throw new Error("User not authenticated")
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+        console.error("Prescription Auth Error:", authError)
+        throw new Error("User not authenticated")
+    }
+
+    console.log("Creating prescription for doctor:", user.id)
 
     const { data, error } = await supabase
         .from("prescriptions")
@@ -255,7 +342,26 @@ export async function createPrescription(prescription: {
         .select()
         .single()
 
-    if (error) throw error
+    if (error) {
+        // If Foreign Key violation (missing profile), try to fix and retry
+        if (error.code === "23503") {
+            await ensureUserProfile(user)
+            // Retry insert
+            const { data: retryData, error: retryError } = await supabase
+                .from("prescriptions")
+                .insert({
+                    ...prescription,
+                    doctor_id: user.id
+                })
+                .select()
+                .single()
+
+            if (retryError) throw retryError
+            return retryData as Prescription
+        }
+        throw error
+    }
+
     return data as Prescription
 }
 
@@ -287,6 +393,22 @@ export async function createDoctorNote(note: {
         .select()
         .single()
 
-    if (error) throw error
+    if (error) {
+        if (error.code === "23503") {
+            await ensureUserProfile(user)
+            const { data: retryData, error: retryError } = await supabase
+                .from("doctor_notes")
+                .insert({
+                    ...note,
+                    doctor_id: user.id
+                })
+                .select()
+                .single()
+
+            if (retryError) throw retryError
+            return retryData as DoctorNote
+        }
+        throw error
+    }
     return data as DoctorNote
 }

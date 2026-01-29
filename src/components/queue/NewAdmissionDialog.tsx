@@ -43,11 +43,21 @@ const admissionSchema = z.object({
 
 type AdmissionFormValues = z.infer<typeof admissionSchema>
 
+const phoneRegex = /^\+?[1-9]\d{7,14}$/;
+
 const patientSchema = z.object({
-    name: z.string().min(2, "Name must be at least 2 characters"),
+    name: z.string()
+        .min(3, "Name must be at least 3 characters")
+        .regex(/^[a-zA-Z\s\.]+$/, "Name can only contain letters, spaces, and dots"),
     gender: z.enum(["Male", "Female", "Other"]),
-    date_of_birth: z.string().optional(),
-    phone: z.string().optional(),
+    date_of_birth: z.string().optional().refine((val) => !val || !isNaN(Date.parse(val)), {
+        message: "Invalid date format",
+    }).refine((val) => !val || new Date(val) < new Date(), {
+        message: "Date of birth must be in the past",
+    }),
+    phone: z.string().optional().refine((val) => !val || phoneRegex.test(val), {
+        message: "Invalid phone number format (e.g. +1234567890)",
+    }),
 })
 
 type PatientFormValues = z.infer<typeof patientSchema>

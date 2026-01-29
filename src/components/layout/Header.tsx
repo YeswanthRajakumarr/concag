@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { MobileSidebar } from "./Sidebar"
 import { Activity, LogOut, User, Stethoscope, HeartPulse } from "lucide-react"
@@ -51,14 +52,14 @@ export function Header() {
     const roleColor = user?.role === "NURSE" ? "bg-pink-100 text-pink-700" : "bg-blue-100 text-blue-700"
 
     return (
-        <header className="sticky top-0 z-40 flex h-16 items-center justify-between gap-4 border-b bg-background px-4">
+        <header className="sticky top-0 z-40 flex h-14 items-center justify-between gap-4 border-b bg-background px-4">
             <div className="flex items-center gap-4">
                 <div className="lg:hidden">
                     <MobileSidebar />
                 </div>
                 <div className="flex items-center gap-2 lg:hidden">
-                    <Activity className="h-6 w-6 text-primary" />
-                    <span className="text-xl font-bold">ConCag</span>
+                    <Activity className="h-5 w-5 text-primary" />
+                    <span className="text-lg font-bold">ConCag</span>
                 </div>
             </div>
 
@@ -92,6 +93,13 @@ export function Header() {
                             </span>
                         </div>
                     </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild className="cursor-pointer">
+                        <Link href="/profile" className="flex items-center">
+                            <User className="h-4 w-4 mr-2" />
+                            Profile
+                        </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleLogout} className="text-red-600 cursor-pointer">
                         <LogOut className="h-4 w-4 mr-2" />

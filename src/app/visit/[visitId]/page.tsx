@@ -234,7 +234,7 @@ export default function VisitPage({ params }: { params: Promise<{ visitId: strin
                 </div>
             </div>
 
-            <div className="max-w-[1400px] mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="max-w-[1600px] mx-auto p-3 grid grid-cols-1 lg:grid-cols-12 gap-4">
                 {/* Clinical Workpanel */}
                 <div className="lg:col-span-8 space-y-6">
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -261,7 +261,7 @@ export default function VisitPage({ params }: { params: Promise<{ visitId: strin
                             </TabsTrigger>
                         </TabsList>
 
-                        <div className="mt-8">
+                        <div className="mt-4">
                             <TabsContent value="diagnosis" className="mt-0 outline-none">
                                 <DiagnosisForm
                                     initialDiagnosis={diagnosis}
@@ -318,9 +318,9 @@ export default function VisitPage({ params }: { params: Promise<{ visitId: strin
                     {/* Chief Complaint Brief */}
                     {triage?.chief_complaint && (
                         <Card className="border-none shadow-lg bg-red-50/50 border-l-4 border-red-500 rounded-2xl overflow-hidden">
-                            <CardContent className="p-6">
+                            <CardContent className="p-4">
                                 <p className="text-[10px] font-black uppercase tracking-widest text-red-600 mb-2">Primary Symptom</p>
-                                <p className="text-xl font-black text-red-900 italic leading-tight">"{triage.chief_complaint}"</p>
+                                <p className="text-lg font-black text-red-900 italic leading-tight">"{triage.chief_complaint}"</p>
                             </CardContent>
                         </Card>
                     )}
@@ -365,7 +365,7 @@ export default function VisitPage({ params }: { params: Promise<{ visitId: strin
 
                     {/* Quick Labels / Risk Factors */}
                     <Card className="border-none shadow-lg rounded-2xl overflow-hidden bg-white">
-                        <CardContent className="p-6 space-y-6">
+                        <CardContent className="p-4 space-y-4">
                             {triage?.allergies && (
                                 <div className="space-y-2">
                                     <div className="text-[10px] font-black uppercase tracking-widest text-red-600 flex items-center gap-2">
