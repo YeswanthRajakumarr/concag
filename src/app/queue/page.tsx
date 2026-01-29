@@ -11,6 +11,7 @@ import { NewAdmissionDialog } from "@/components/queue/NewAdmissionDialog"
 import { getActiveVisits, updateVisitStatus } from "@/lib/api"
 import { toast } from "sonner"
 import type { VisitWithPatient, VisitStatus } from "@/types/database"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { THEME } from "@/lib/theme"
 
 const statusOrder: VisitStatus[] = [
@@ -89,33 +90,65 @@ export default function QueuePage() {
     }
 
     return (
-        <div className={cn("p-8 max-w-[1600px] mx-auto", THEME.animations.fadeIn)}>
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+        <div className={cn("flex flex-col h-[calc(100vh-4rem)] md:h-screen", THEME.spacing.page)}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div className="space-y-1">
-                    <h1 className={THEME.typography.heading}>Patient Queue</h1>
-                    <div className="flex items-center gap-2">
-                        <div className={cn(THEME.components.pulse, "bg-emerald-500")} />
-                        <p className={THEME.typography.meta}>
-                            {visits.length} Live Clinical Sessions
-                        </p>
-                    </div>
+                    <h1 className="text-2xl font-bold tracking-tight text-foreground">Patient Queue</h1>
+                    <p className="text-sm text-muted-foreground">
+                        {visits.length} active sessions
+                    </p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex gap-2 w-full sm:w-auto">
                     <Button
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
                         onClick={handleRefresh}
                         disabled={refreshing}
-                        className={cn(THEME.typography.meta, "h-10 px-5 transition-colors")}
+                        className="flex-1 sm:flex-none"
                     >
-                        <RefreshCw className={cn("h-3 w-3 mr-2", refreshing && "animate-spin")} />
-                        Synch Data
+                        <RefreshCw className={cn("h-4 w-4 mr-2", refreshing && "animate-spin")} />
+                        Sync
                     </Button>
                     <NewAdmissionDialog onSuccess={handleNewAdmission} />
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Mobile View: Tabs */}
+            <div className="flex-1 md:hidden">
+                <Tabs defaultValue="WAITING" className="h-full flex flex-col">
+                    <TabsList className="grid w-full grid-cols-4 mb-4">
+                        <TabsTrigger value="WAITING" className="text-[10px] sm:text-xs">Wait</TabsTrigger>
+                        <TabsTrigger value="IN_TRIAGE" className="text-[10px] sm:text-xs">Triage</TabsTrigger>
+                        <TabsTrigger value="READY_FOR_DOCTOR" className="text-[10px] sm:text-xs">Ready</TabsTrigger>
+                        <TabsTrigger value="WITH_DOCTOR" className="text-[10px] sm:text-xs">Doctor</TabsTrigger>
+                    </TabsList>
+                    {statusOrder.map((status) => {
+                        const statusVisits = getVisitsByStatus(status)
+                        return (
+                            <TabsContent key={status} value={status} className="flex-1 mt-0 h-full">
+                                <StatusColumn status={status} count={statusVisits.length}>
+                                    {statusVisits.length === 0 ? (
+                                        <div className="text-center py-8 text-sm text-muted-foreground">
+                                            No visits
+                                        </div>
+                                    ) : (
+                                        statusVisits.map((visit) => (
+                                            <VisitCard
+                                                key={visit.id}
+                                                visit={visit}
+                                                onAction={handleAction}
+                                            />
+                                        ))
+                                    )}
+                                </StatusColumn>
+                            </TabsContent>
+                        )
+                    })}
+                </Tabs>
+            </div>
+
+            {/* Desktop View: Grid */}
+            <div className={cn("hidden md:grid grid-cols-2 lg:grid-cols-4 h-full", THEME.spacing.cardGap)}>
                 {statusOrder.map((status) => {
                     const statusVisits = getVisitsByStatus(status)
                     return (

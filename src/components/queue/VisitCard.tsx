@@ -1,17 +1,13 @@
-"use client"
-
 import Link from "next/link"
 import { formatDistanceToNow } from "date-fns"
-import { Clock, ArrowRight, AlertCircle, ChevronRight } from "lucide-react"
+import { Clock, AlertCircle, ChevronRight, User } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { VISIT_STATUS_CONFIG } from "@/lib/constants"
 import type { VisitWithPatient, VisitStatus } from "@/types/database"
-
-import { THEME } from "@/lib/theme"
+import { getStatusColorClasses } from "@/lib/theme"
 
 interface VisitCardProps {
     visit: VisitWithPatient
@@ -21,115 +17,78 @@ interface VisitCardProps {
 export function VisitCard({ visit, onAction }: VisitCardProps) {
     const arrivalTime = new Date(visit.arrival_time)
     const waitTime = formatDistanceToNow(arrivalTime, { addSuffix: false })
-
-    const waitingTooLong = Date.now() - arrivalTime.getTime() > 30 * 60 * 1000
     const isUrgent = visit.visit_type === "EMERGENCY"
 
-    const getActionButton = () => {
-        const baseClass = THEME.components.buttonPrimary
-        const outlineClass = THEME.components.buttonOutline
-
+    // Action button logic
+    const renderActionParams = () => {
         switch (visit.status as VisitStatus) {
             case 'WAITING':
-                return (
-                    <Button
-                        size="sm"
-                        className={baseClass}
-                        onClick={() => onAction?.('start_triage', visit.id)}
-                    >
-                        Initiate Triage
-                    </Button>
-                )
+                return { label: "Triage", action: "start_triage", variant: "default" as const }
             case 'IN_TRIAGE':
-                return (
-                    <Link href={`/triage/${visit.id}`} className="w-full">
-                        <Button size="sm" variant="outline" className={cn(outlineClass, "w-full group")}>
-                            Resume Assessment
-                            <ChevronRight className="ml-1 h-3 w-3 transition-transform group-hover:translate-x-1" />
-                        </Button>
-                    </Link>
-                )
+                return { label: "Resume", action: "resume_triage", variant: "outline" as const, href: `/triage/${visit.id}` }
             case 'READY_FOR_DOCTOR':
-                return (
-                    <Button
-                        size="sm"
-                        className={baseClass}
-                        onClick={() => onAction?.('assign_doctor', visit.id)}
-                    >
-                        Assign Doctor
-                    </Button>
-                )
+                return { label: "Assign", action: "assign_doctor", variant: "default" as const }
             case 'WITH_DOCTOR':
-                return (
-                    <Link href={`/visit/${visit.id}`} className="w-full">
-                        <Button size="sm" variant="outline" className={cn(outlineClass, "w-full group")}>
-                            Consult Detail
-                            <ChevronRight className="ml-1 h-3 w-3 transition-transform group-hover:translate-x-1" />
-                        </Button>
-                    </Link>
-                )
+                return { label: "Consult", action: "view_consult", variant: "outline" as const, href: `/visit/${visit.id}` }
             default:
                 return null
         }
     }
 
+    const actionParams = renderActionParams()
+
     return (
-        <Card className={cn(
-            THEME.components.card,
-            THEME.components.cardInteractive,
-            isUrgent && "ring-1 ring-red-100"
-        )}>
-            {/* Urgent Status Ribbon */}
-            {isUrgent && (
-                <div className="absolute top-0 right-0 p-1.5">
-                    <div className={cn(THEME.components.pulse, "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]")} />
+        <Card className={cn("hover:shadow-md transition-shadow flex flex-col", isUrgent && "border-red-200 bg-red-50/20")}>
+            <CardContent className="p-3 space-y-3">
+                {/* Top Row: Name and Time */}
+                <div className="flex justify-between items-start gap-2">
+                    <div className="flex-1 min-w-0 font-bold text-sm truncate" title={visit.patient.name}>
+                        {visit.patient.name}
+                    </div>
+                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground whitespace-nowrap shrink-0">
+                        <Clock className="h-3 w-3" />
+                        <span>{waitTime}</span>
+                    </div>
                 </div>
-            )}
 
-            <CardContent className="p-5">
-                <div className="space-y-4">
-                    {/* Header: Patient Info */}
-                    <div className="flex items-start gap-3">
-                        <div className={cn(
-                            "h-10 w-10 rounded-xl flex items-center justify-center font-black text-xs shadow-sm transform transition-transform group-hover:rotate-3",
-                            isUrgent
-                                ? `bg-${THEME.colors.status.urgentBg} text-${THEME.colors.status.urgent}`
-                                : `bg-${THEME.colors.brand.primaryLight} text-${THEME.colors.brand.primary}`
-                        )}>
-                            {visit.patient.name.charAt(0)}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <h4 className={`font-bold text-${THEME.colors.text.main} text-sm leading-tight truncate`}>
-                                {visit.patient.name}
-                            </h4>
-                            <div className="flex items-center gap-1.5 mt-1">
-                                <Clock className={`h-3 w-3 text-${THEME.colors.text.muted}`} />
-                                <span className={cn(
-                                    THEME.typography.meta,
-                                    waitingTooLong && !isUrgent ? `text-${THEME.colors.status.waiting}` : `text-${THEME.colors.text.muted}`
-                                )}>
-                                    {waitTime} ago
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                {/* Middle Row: Badges */}
+                <div className="flex flex-wrap items-center gap-2 min-h-[1.5rem]">
+                    {visit.department && (
+                        <Badge variant="secondary" className="text-[10px] font-medium px-1.5 py-0 max-w-[140px] truncate" title={visit.department}>
+                            {visit.department}
+                        </Badge>
+                    )}
+                    {isUrgent && (
+                        <Badge variant="destructive" className="h-5 px-1.5 text-[10px]">
+                            URGENT
+                        </Badge>
+                    )}
+                </div>
 
-                    {/* Metadata Badges */}
-                    <div className="flex flex-wrap gap-2">
-                        {visit.department && (
-                            <div className={cn(THEME.typography.meta, "px-2 py-0.5 rounded-md bg-slate-50 border text-slate-500")}>
-                                {visit.department}
-                            </div>
-                        )}
-                        <div className={cn(THEME.typography.meta, "px-2 py-0.5 rounded-md bg-white border border-slate-100 text-slate-400")}>
-                            {visit.visit_type}
-                        </div>
-                    </div>
+                {/* Bottom Row: Status and Action */}
+                <div className="flex items-center justify-between gap-2 pt-1 mt-auto">
+                    <Badge variant="outline" className={cn("text-[10px] font-medium h-6 px-2 border-0", getStatusColorClasses(visit.status))}>
+                        {visit.status.replace(/_/g, " ")}
+                    </Badge>
 
-                    {/* Action */}
-                    <div className="pt-2">
-                        {getActionButton()}
-                    </div>
+                    {actionParams && (
+                        actionParams.href ? (
+                            <Link href={actionParams.href}>
+                                <Button size="sm" variant={actionParams.variant} className="h-7 text-xs px-3">
+                                    {actionParams.label}
+                                </Button>
+                            </Link>
+                        ) : (
+                            <Button
+                                size="sm"
+                                variant={actionParams.variant}
+                                className="h-7 text-xs px-3"
+                                onClick={() => onAction?.(actionParams.action, visit.id)}
+                            >
+                                {actionParams.label}
+                            </Button>
+                        )
+                    )}
                 </div>
             </CardContent>
         </Card>

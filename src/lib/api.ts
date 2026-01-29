@@ -243,9 +243,15 @@ export async function createPrescription(prescription: {
     duration?: string
     notes?: string
 }) {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error("User not authenticated")
+
     const { data, error } = await supabase
         .from("prescriptions")
-        .insert(prescription)
+        .insert({
+            ...prescription,
+            doctor_id: user.id
+        })
         .select()
         .single()
 
@@ -269,9 +275,15 @@ export async function createDoctorNote(note: {
     note_type: "DIAGNOSIS" | "CLINICAL_NOTE" | "FOLLOWUP"
     content: string
 }) {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error("User not authenticated")
+
     const { data, error } = await supabase
         .from("doctor_notes")
-        .insert(note)
+        .insert({
+            ...note,
+            doctor_id: user.id
+        })
         .select()
         .single()
 

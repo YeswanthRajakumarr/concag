@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils"
 import { VISIT_STATUS_CONFIG } from "@/lib/constants"
 import type { VisitStatus } from "@/types/database"
-import { THEME } from "@/lib/theme"
+import { getStatusColorClasses } from "@/lib/theme"
 
 interface StatusColumnProps {
     status: VisitStatus
@@ -13,37 +13,24 @@ interface StatusColumnProps {
 
 export function StatusColumn({ status, count, children }: StatusColumnProps) {
     const config = VISIT_STATUS_CONFIG[status]
-
-    const getIndicatorColor = () => {
-        switch (status) {
-            case "WAITING": return "bg-amber-400";
-            case "IN_TRIAGE": return "bg-blue-400";
-            case "READY_FOR_DOCTOR": return `bg-${THEME.colors.brand.primary}`;
-            case "WITH_DOCTOR": return `bg-${THEME.colors.status.doctor}`;
-            default: return "bg-slate-400";
-        }
-    }
+    const statusColor = getStatusColorClasses(status)
 
     return (
-        <div className={cn("flex flex-col min-h-[500px] border rounded-3xl shadow-sm overflow-hidden transition-all hover:shadow-lg", THEME.animations.fadeIn)}>
-            {/* Minimal Header */}
-            <div className="px-5 py-4 border-b bg-white flex items-center justify-between">
-                <div className="flex flex-col">
-                    <div className="flex items-center gap-2">
-                        {/* Status Type Indicator Dot */}
-                        <div className={cn("h-1.5 w-1.5 rounded-full", getIndicatorColor())} />
-                        <h3 className={cn(THEME.typography.meta, "text-slate-900 leading-none")}>
-                            {config.label}
-                        </h3>
-                    </div>
+        <div className="flex flex-col h-[calc(100vh-12rem)] min-h-[500px] border rounded-lg bg-muted/10 overflow-hidden">
+            {/* Standard Table-like Header */}
+            <div className={cn("px-4 py-3 border-b bg-background flex items-center justify-between sticky top-0 z-10", statusColor.replace('text-', 'border-l-4 border-l-'))}>
+                <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-sm uppercase text-foreground">
+                        {config.label}
+                    </h3>
                 </div>
-                <div className="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200">
-                    <span className="text-[10px] font-black text-slate-600 tracking-tighter">{count}</span>
+                <div className="px-2 py-0.5 rounded-full bg-muted text-xs font-medium text-muted-foreground">
+                    {count}
                 </div>
             </div>
 
             {/* Content Area */}
-            <div className="flex-1 p-4 space-y-4 overflow-auto bg-slate-50/20">
+            <div className="flex-1 p-3 space-y-3 overflow-y-auto custom-scrollbar">
                 {children}
             </div>
         </div>
